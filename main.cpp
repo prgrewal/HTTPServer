@@ -4,6 +4,26 @@
 #include <stdlib.h>
 #include <netinet/in.h>
 #include <string.h>
+#include <string>
+#include <iostream>
+#include <map>
+
+std::string process(std::string const& s) {
+  std::string::size_type pos = s.find(' ');
+  if (pos != std::string::npos) {
+    return s.substr(0, pos);
+  } else {
+    return s;
+  }
+}
+
+enum requestMethods {
+  GET,
+  POST,
+  PUT,
+  PATCH,
+  DELETE  
+};
 
 int main () {
   int server_fd; 
@@ -13,7 +33,12 @@ int main () {
   int addrlen = sizeof(address);
   const int PORT = 8080;
 
-  char* hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
+  std::map<std::string, requestMethods> requestsMethodsMap;
+  requestsMethodsMap["GET"] = GET;
+  requestsMethodsMap["POST"] = POST;
+  requestsMethodsMap["PUT"] = PUT;
+  requestsMethodsMap["PATCH"] = PATCH;
+  requestsMethodsMap["DELETE"] = DELETE;
 
   if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
     perror("Error in socket");
@@ -22,9 +47,9 @@ int main () {
 
   address.sin_family = AF_INET;
   address.sin_addr.s_addr = INADDR_ANY;
-  address.sin_port = htons( PORT );
+  address.sin_port = htons(PORT);
 
-  memset(address.sin_zero, '\0', sizeof address.sin_zero);
+  memset(address.sin_zero, '\0', sizeof(address.sin_zero));
 
   if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
     perror("Error in bind");
@@ -45,8 +70,27 @@ int main () {
     char buffer[30000] = {0};
     valread = read( new_socket , buffer, 30000);
     printf("%s\n",buffer );
-    write(new_socket , hello , strlen(hello));
+    std::string method = process(buffer);
+    std::string result;
+    switch (requestsMethodsMap[method]) {
+      case GET: 
+        result = "YOU SENT A GET REQUEST\n";
+        break;
+      case POST:
+        result = "YOU SENT A POST REQUEST\n";
+        break;
+      case PUT:
+        result = "YOU SENT A PUT REQUEST\n";
+        break;
+      case PATCH:
+        result = "YOU SENT A PATCH REQUEST\n";
+        break;
+      case DELETE:
+        result = "YOU SENT A DELETE REQUEST\n";
+        break;
+    }
 
+    write(new_socket, result.c_str(), result.length());
     close(new_socket);
   }
   return 0;
