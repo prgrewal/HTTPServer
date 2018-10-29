@@ -7,6 +7,7 @@
 #include <string>
 #include <iostream>
 #include <map>
+#include <vector>
 
 std::string process(std::string const& s) {
   std::string::size_type pos = s.find(' ');
@@ -67,10 +68,12 @@ int main () {
       return 0;
     }
 
-    char buffer[30000] = {0};
-    valread = read( new_socket , buffer, 30000);
-    printf("%s\n",buffer );
-    std::string method = process(buffer);
+    std::vector<char> buffer(30000);
+    valread = read(new_socket , &buffer[0], buffer.size());
+    std::string str(buffer.begin(), buffer.end());
+    std::cout << str << std::endl;
+
+    std::string method = process(str);
     std::string result;
     switch (requestsMethodsMap[method]) {
       case GET: 
@@ -91,6 +94,7 @@ int main () {
     }
 
     write(new_socket, result.c_str(), result.length());
+
     close(new_socket);
   }
   return 0;
