@@ -1,0 +1,3 @@
+﻿  ServerTest.cpp
+c:\users\fugdis\source\repos\servertest\servertest\servertest.cpp(332): warning C4101: 'i': unreferenced local variable
+  ServerTest.vcxproj -> C:\Users\fugdis\source\repos\ServerTest\Debug\ServerTest.exe
