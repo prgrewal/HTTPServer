@@ -4,4 +4,6 @@
 <ul>
 	<li>Use Windows IOCP to hammer server with async requests</li>
 </ul>
-![Logo](servertest.png)
+<p align="center">
+	<img src="https://github.com/prgrewal/HTTPServer/blob/master/tests/servertest.PNG">
+</p>
