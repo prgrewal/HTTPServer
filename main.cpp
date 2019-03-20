@@ -29,13 +29,13 @@ int make_socket_non_blocking(int sfd) {
 
   flags = fcntl(sfd, F_GETFL, 0);
   if (flags == -1) {
-    perror("fcntl");
+    throw system_error_stacktrace(std::error_code(server_fd, std::generic_category()), "Error in fcntl");
     return -1;
   }
 
   flags |= O_NONBLOCK;
   if (fcntl(sfd, F_SETFL, flags) == -1) {
-    perror("fcntl");
+    throw system_error_stacktrace(std::error_code(server_fd, std::generic_category()), "Error in fcntl");
     return -1;
   }
 
@@ -162,13 +162,13 @@ int main () {
           event.data.fd = new_socket;
           event.events = EPOLLIN | EPOLLET;
           if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, new_socket, &event) == -1) {
-            perror("epoll_ctl");
+            throw system_error_stacktrace(std::error_code(server_fd, std::generic_category()), "Error in epoll_ctl");
             abort();
           }
           in_len = sizeof(in_addr);
 
           if (errno != EAGAIN && errno != EWOULDBLOCK)
-            perror("accept");
+            throw system_error_stacktrace(std::error_code(server_fd, std::generic_category()), "Error in accept");
           /* else
            *
            * We hae processed all incomming connectioins
